@@ -6,11 +6,18 @@ const async = require('async');
 const tmp = require('tmp');
 const { execFile } = require('child_process');
 
+let userInstallationFilePath = null
+
+let installDir = null
+
 const convertWithOptions = (document, format, filter, options, callback) => {
     const tmpOptions = (options || {}).tmpOptions || {};
     const asyncOptions = (options || {}).asyncOptions || {};
     const tempDir = tmp.dirSync({prefix: 'libreofficeConvert_', unsafeCleanup: true, ...tmpOptions});
-    const installDir = tmp.dirSync({prefix: 'soffice', unsafeCleanup: true, ...tmpOptions});
+    if( ! installDir ) {
+        installDir = tmp.dirSync({prefix: 'soffice', unsafeCleanup: true, ...tmpOptions});
+    }
+
     return async.auto({
         soffice: (callback) => {
             let paths = [];
@@ -48,6 +55,7 @@ const convertWithOptions = (document, format, filter, options, callback) => {
         },
         saveSource: callback => fs.writeFile(path.join(tempDir.name, 'source'), document, callback),
         convert: ['soffice', 'saveSource', (results, callback) => {
+     
             let command = `-env:UserInstallation=file://${installDir.name} --headless --convert-to ${format}`;
             if (filter !== undefined) {
                 command += `:"${filter}"`;
