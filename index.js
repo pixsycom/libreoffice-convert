@@ -9,11 +9,14 @@ const { execFile } = require('child_process');
 let userInstallationFilePath = null
 
 let installDir = null
+let tempDir = null
 
 const convertWithOptions = (document, format, filter, options, callback) => {
     const tmpOptions = (options || {}).tmpOptions || {};
     const asyncOptions = (options || {}).asyncOptions || {};
-    const tempDir = tmp.dirSync({prefix: 'libreofficeConvert_', unsafeCleanup: true, ...tmpOptions});
+    if( ! tempDir ) {
+         tempDir = tmp.dirSync({prefix: 'libreofficeConvert_', unsafeCleanup: true, ...tmpOptions});
+    }
     if( ! installDir ) {
         installDir = tmp.dirSync({prefix: 'soffice', unsafeCleanup: true, ...tmpOptions});
     }
