@@ -54,6 +54,7 @@ const convertWithOptions = (document, format, filter, options, callback) => {
             }
             command += ` --outdir ${tempDir.name} ${path.join(tempDir.name, 'source')}`;
             const args = command.split(' ');
+            console.log("trying ", command)
             return execFile(results.soffice, args, callback);
         }],
         loadDestination: ['convert', (results, callback) =>
