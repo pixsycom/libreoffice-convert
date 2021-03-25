@@ -13,11 +13,12 @@ const convertWithOptions = (document, format, filter, options, callback) => {
     const installDir = tmp.dirSync({prefix: 'soffice', unsafeCleanup: true, ...tmpOptions});
     return async.auto({
         soffice: (callback) => {
+            console.log("Finding libreoffice for ", process.platform)
             let paths = [];
             switch (process.platform) {
                 case 'darwin': paths = ['/Applications/LibreOffice.app/Contents/MacOS/soffice'];
                     break;
-                case 'linux': paths = ['/usr/bin/libreoffice', '/usr/bin/soffice'];
+                case 'linux': paths = ['/usr/bin/libreoffice', '/usr/bin/soffice', '/tmp/instdir/program/soffice.bin'];
                     break;
                 case 'win32': paths = [
                     path.join(process.env['PROGRAMFILES(X86)'], 'LIBREO~1/program/soffice.exe'),
@@ -31,7 +32,13 @@ const convertWithOptions = (document, format, filter, options, callback) => {
 
             return async.filter(
                 paths,
-                (filePath, callback) => fs.access(filePath, err => callback(null, !err)),
+                (filePath, callback) => {
+                    console.log("Checking ", filePath)
+                    fs.access(filePath, err => {
+                        console.log("Checking result: ", err)
+                        callback(null, !err)
+                    })
+                },
                 (err, res) => {
                     if (res.length === 0) {
                         return callback(new Error('Could not find soffice binary'));
