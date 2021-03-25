@@ -13,7 +13,6 @@ const convertWithOptions = (document, format, filter, options, callback) => {
     const installDir = tmp.dirSync({prefix: 'soffice', unsafeCleanup: true, ...tmpOptions});
     return async.auto({
         soffice: (callback) => {
-            console.log("Finding libreoffice for ", process.platform)
             let paths = [];
             switch (process.platform) {
                 case 'darwin': paths = ['/Applications/LibreOffice.app/Contents/MacOS/soffice'];
@@ -34,10 +33,9 @@ const convertWithOptions = (document, format, filter, options, callback) => {
                 paths,
                 (filePath, callback) => {
                     console.log("Checking ", filePath)
-                    fs.access(filePath, err => {
-                        console.log("Checking result: ", err)
+                    fs.access(filePath, err => 
                         callback(null, !err)
-                    })
+                    )
                 },
                 (err, res) => {
                     if (res.length === 0) {
